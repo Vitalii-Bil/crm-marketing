@@ -2,7 +2,9 @@ from fastapi import APIRouter, HTTPException
 from pydantic_models.common import (
     OrderStatus,
     LeaveCommentRequest,
-    ManagerRegistrationRequest, OrderStatusUpdate, SignInRequest,
+    ManagerRegistrationRequest,
+    OrderStatusUpdate,
+    SignInRequest,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, text
@@ -34,7 +36,7 @@ class ManagerController:
                 first_name=sign_up_data.first_name,
                 last_name=sign_up_data.last_name,
                 birthday=sign_up_data.birthday,
-                phone_number=sign_up_data.phone_number
+                phone_number=sign_up_data.phone_number,
             )
             session.add(new_manager)
             await session.commit()
@@ -62,10 +64,12 @@ class ManagerController:
         try:
             if await self._check_if_manager_active(manager_id, session):
                 await session.execute(
-                    update(Orders).where(
+                    update(Orders)
+                    .where(
                         Orders.pk == order_id,
                         Orders.order_status == OrderStatus.Free,
-                    ).values({"order_status": OrderStatus.InWork, "manager_id": manager_id})
+                    )
+                    .values({"order_status": OrderStatus.InWork, "manager_id": manager_id})
                 )
                 await session.commit()
                 return {"message": "Order got in work"}
@@ -76,9 +80,7 @@ class ManagerController:
     async def get_in_work_orders(self, manager_id, session: AsyncSession):
         try:
             if await self._check_if_manager_active(manager_id, session):
-                result = await session.execute(
-                    select(Orders).filter(Orders.manager_id == manager_id)
-                )
+                result = await session.execute(select(Orders).filter(Orders.manager_id == manager_id))
                 response = result.scalars().all()
                 if not response:
                     return {"message": "No in work orders found"}
@@ -104,14 +106,18 @@ class ManagerController:
         except Exception:
             raise HTTPException(status_code=404, detail="Failed database selection")
 
-    async def update_status_in_work_order_by_id(self, manager_id, order_id, status: OrderStatusUpdate, session: AsyncSession):
+    async def update_status_in_work_order_by_id(
+        self, manager_id, order_id, status: OrderStatusUpdate, session: AsyncSession
+    ):
         try:
             if await self._check_if_manager_active(manager_id, session):
                 await session.execute(
-                    update(Orders).where(
+                    update(Orders)
+                    .where(
                         Orders.pk == order_id,
                         Orders.manager_id == manager_id,
-                    ).values({"order_status": status.name})
+                    )
+                    .values({"order_status": status.name})
                 )
                 await session.commit()
                 return {"message": "Order status updated"}
@@ -123,10 +129,12 @@ class ManagerController:
         try:
             if await self._check_if_manager_active(manager_id, session):
                 await session.execute(
-                    update(Orders).where(
+                    update(Orders)
+                    .where(
                         Orders.pk == order_id,
                         Orders.manager_id == manager_id,
-                    ).values({"order_status": OrderStatus.Free, "manager_id": None})
+                    )
+                    .values({"order_status": OrderStatus.Free, "manager_id": None})
                 )
                 await session.commit()
                 return {"message": "Order made free"}

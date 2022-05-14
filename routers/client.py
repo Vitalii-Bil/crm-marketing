@@ -18,6 +18,7 @@ async def get_sub_security(access_token: str = Header(...)):
             return await cognito_manager.get_user_sub_from_token(access_token)
         except Exception:
             raise HTTPException(status_code=404, detail="Access token was not validated")
+
     return await get_sub()
 
 
@@ -46,17 +47,24 @@ async def get_orders(client_id: str = Security(get_sub_security), session: Async
 
 
 @router.get("/client/order/", tags=["client"])
-async def get_order_by_id(order_id: str, client_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)):
+async def get_order_by_id(
+    order_id: str, client_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)
+):
     return await client_controller.get_order_by_id(client_id, order_id, session)
 
 
 @router.put("/client/order/", tags=["client"])
 async def update_order(
-    order_id: str, update_data: common.OrderUpdateRequest, client_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)
+    order_id: str,
+    update_data: common.OrderUpdateRequest,
+    client_id: str = Security(get_sub_security),
+    session: AsyncSession = Depends(get_session),
 ):
     return await client_controller.update_order(client_id, order_id, update_data, session)
 
 
 @router.delete("/client/order/", tags=["client"])
-async def delete_order(order_id: str, client_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)):
+async def delete_order(
+    order_id: str, client_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)
+):
     return await client_controller.delete_order(client_id, order_id, session)

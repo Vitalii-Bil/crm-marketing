@@ -4,7 +4,14 @@ import hashlib
 import aioboto3
 from fastapi import HTTPException
 
-from config import COGNITO_POOL_CLIENT_ID, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, COGNITO_POOL_CLIENT_SECRET, COGNITO_USER_POOL_ID
+from config import (
+    COGNITO_POOL_CLIENT_ID,
+    AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY,
+    AWS_REGION,
+    COGNITO_POOL_CLIENT_SECRET,
+    COGNITO_USER_POOL_ID,
+)
 
 
 class CognitoUserManagement:
@@ -16,8 +23,9 @@ class CognitoUserManagement:
 
     def _manager_get_secret_hash(self, username):
         message = username + COGNITO_POOL_CLIENT_ID
-        dig = hmac.new(str(COGNITO_POOL_CLIENT_SECRET).encode("utf-8"), msg=message.encode('UTF-8'),
-                       digestmod=hashlib.sha256).digest()
+        dig = hmac.new(
+            str(COGNITO_POOL_CLIENT_SECRET).encode("utf-8"), msg=message.encode("UTF-8"), digestmod=hashlib.sha256
+        ).digest()
         return base64.b64encode(dig).decode()
 
     async def manager_sign_up(self, user_email, user_password):
@@ -34,8 +42,10 @@ class CognitoUserManagement:
                 return cognito_response["UserSub"]
         except client.exceptions.ClientError as ex:
             print(f"Failed user authentication: {repr(ex)}")
-            raise HTTPException(status_code=404, detail="Failed user signing up. Note that password should have at least 1 letter, 1 symbol, 1 number, 1 upper and lower case letter")
-
+            raise HTTPException(
+                status_code=404,
+                detail="Failed user signing up. Note that password should have at least 1 letter, 1 symbol, 1 number, 1 upper and lower case letter",
+            )
 
     async def manager_confirm_sign_up(self, user_email):
         try:
@@ -48,7 +58,6 @@ class CognitoUserManagement:
         except client.exceptions.ClientError as ex:
             print(f"Failed user authentication: {repr(ex)}")
             raise HTTPException(status_code=404, detail="Failed user confirmation.")
-
 
     async def manager_sign_in(self, user_email, user_password):
         try:

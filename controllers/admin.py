@@ -59,9 +59,11 @@ class AdminController:
     async def update_manager_status(self, manager_id, status, session: AsyncSession):
         try:
             await session.execute(
-                update(models_base.Managers).where(
+                update(models_base.Managers)
+                .where(
                     models_base.Managers.id == manager_id,
-                ).values({"status": status})
+                )
+                .values({"status": status})
             )
             await session.commit()
             return {"message": "Manager status updated"}

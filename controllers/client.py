@@ -1,5 +1,11 @@
 from fastapi import APIRouter, HTTPException
-from pydantic_models.common import OrderCreateRequest, OrderUpdateRequest, ClientRegisterRequest, OrderStatus, SignInRequest
+from pydantic_models.common import (
+    OrderCreateRequest,
+    OrderUpdateRequest,
+    ClientRegisterRequest,
+    OrderStatus,
+    SignInRequest,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, delete
 
@@ -43,7 +49,7 @@ class ClientController:
                 order_name=data.order_name,
                 order_details=data.order_details,
                 sphere_type=data.sphere_type,
-                order_status=OrderStatus.Free
+                order_status=OrderStatus.Free,
             )
             session.add(new_order)
             await session.commit()

@@ -3,8 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from controllers import manager
 from db.session import get_session
-from pydantic_models.common import OrderStatus, LeaveCommentRequest, ManagerRegistrationRequest, OrderStatusUpdate, \
-    SignInRequest
+from pydantic_models.common import (
+    OrderStatus,
+    LeaveCommentRequest,
+    ManagerRegistrationRequest,
+    OrderStatusUpdate,
+    SignInRequest,
+)
 from user_management import cognito
 
 router = APIRouter()
@@ -18,6 +23,7 @@ async def get_sub_security(access_token: str = Header(...)):
             return await cognito_manager.get_user_sub_from_token(access_token)
         except Exception:
             raise HTTPException(status_code=404, detail="Access token was not validated")
+
     return await get_sub()
 
 
@@ -37,27 +43,38 @@ async def get_free_orders(manager_id: str = Security(get_sub_security), session:
 
 
 @router.put("/manager/make_order_in_work/", tags=["manager"])
-async def make_order_in_work(order_id: str, manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)):
+async def make_order_in_work(
+    order_id: str, manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)
+):
     return await manager_controller.make_order_in_work(manager_id, order_id, session)
 
 
 @router.get("/manager/in_work_orders/", tags=["manager"])
-async def get_in_work_orders(manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)):
+async def get_in_work_orders(
+    manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)
+):
     return await manager_controller.get_in_work_orders(manager_id, session)
 
 
 @router.get("/manager/in_work_order/", tags=["manager"])
-async def get_in_work_order_by_id(order_id: str, manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)):
+async def get_in_work_order_by_id(
+    order_id: str, manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)
+):
     return await manager_controller.get_in_work_order_by_id(manager_id, order_id, session)
 
 
 @router.put("/manager/in_work_order/status/", tags=["manager"])
 async def update_status_in_work_order_by_id(
-    order_id: str, status: OrderStatusUpdate, manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)
+    order_id: str,
+    status: OrderStatusUpdate,
+    manager_id: str = Security(get_sub_security),
+    session: AsyncSession = Depends(get_session),
 ):
     return await manager_controller.update_status_in_work_order_by_id(manager_id, order_id, status, session)
 
 
 @router.put("/manager/make_order_free/", tags=["manager"])
-async def make_order_free(order_id: str, manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)):
+async def make_order_free(
+    order_id: str, manager_id: str = Security(get_sub_security), session: AsyncSession = Depends(get_session)
+):
     return await manager_controller.make_order_free(manager_id, order_id, session)
