@@ -64,14 +64,6 @@ class Managers(Base):
     phone_number = sa.Column("phone_number", sa.VARCHAR(25), nullable=False)
 
 
-order_comment_association = sa.Table(
-    "order_comment_association",
-    Base.metadata,
-    sa.Column("order_pk", sa.ForeignKey("orders.pk")),
-    sa.Column("comment_pk", sa.ForeignKey("comments.pk")),
-)
-
-
 class Orders(Base):
     __tablename__ = "orders"
 
@@ -101,18 +93,4 @@ class Orders(Base):
     updated_at = sa.Column(
         "updated_at", sa.DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow
     )
-    comments = relationship("Comments", secondary=order_comment_association)
 
-
-class Comments(Base):
-    __tablename__ = "comments"
-
-    pk = sa.Column(
-        "pk",
-        sa.String(48),
-        unique=True,
-        nullable=False,
-        primary_key=True,
-        default=_uuid,
-    )
-    comment_details = sa.Column("comment_details", sa.Text, nullable=False)

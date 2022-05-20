@@ -11,11 +11,12 @@ from sqlalchemy import select, update, delete
 
 from db.models.models_base import Orders, Clients
 from user_management.cognito import CognitoUserManagement
+from controllers.base import BaseController
 
 router = APIRouter()
 
 
-class ClientController:
+class ClientController(BaseController):
     _cognito_manager = CognitoUserManagement()
 
     async def client_sign_up(self, sign_up_data: ClientRegisterRequest, session: AsyncSession):
@@ -39,8 +40,7 @@ class ClientController:
             raise HTTPException(status_code=404, detail="Failed database insertion")
 
     async def client_sign_in(self, sign_in_data: SignInRequest):
-        access_token = await self._cognito_manager.manager_sign_in(sign_in_data.email, sign_in_data.password)
-        return {"access_token": access_token}
+        return await self.sign_in(sign_in_data)
 
     async def create_order(self, client_id, data: OrderCreateRequest, session: AsyncSession):
         try:

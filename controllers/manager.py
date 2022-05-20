@@ -1,7 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic_models.common import (
     OrderStatus,
-    LeaveCommentRequest,
     ManagerRegistrationRequest,
     OrderStatusUpdate,
     SignInRequest,
@@ -11,11 +10,12 @@ from sqlalchemy import select, update, text
 
 from db.models.models_base import Orders, Managers
 from user_management.cognito import CognitoUserManagement
+from controllers.base import BaseController
 
 router = APIRouter()
 
 
-class ManagerController:
+class ManagerController(BaseController):
     _cognito_manager = CognitoUserManagement()
 
     async def _check_if_manager_active(self, manager_id, session: AsyncSession):
@@ -45,8 +45,7 @@ class ManagerController:
             raise HTTPException(status_code=404, detail="Failed database insertion")
 
     async def client_sign_in(self, sign_in_data: SignInRequest):
-        access_token = await self._cognito_manager.manager_sign_in(sign_in_data.email, sign_in_data.password)
-        return {"access_token": access_token}
+        return await self.sign_in(sign_in_data)
 
     async def get_free_orders(self, manager_id, session: AsyncSession):
         try:

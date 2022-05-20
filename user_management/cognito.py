@@ -12,9 +12,10 @@ from config import (
     COGNITO_POOL_CLIENT_SECRET,
     COGNITO_USER_POOL_ID,
 )
+from abstract.cognito_abc import CognitoUserManagementAbstract
 
 
-class CognitoUserManagement:
+class CognitoUserManagement(CognitoUserManagementAbstract):
     def __init__(self):
         self.session = aioboto3.Session(
             aws_access_key_id=AWS_ACCESS_KEY_ID,

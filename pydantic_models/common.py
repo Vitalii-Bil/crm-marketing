@@ -58,10 +58,6 @@ class ClientRegisterRequest(BaseModel):
     address: str
 
 
-class LeaveCommentRequest(BaseModel):
-    comment_details: str
-
-
 class ManagerRegistrationRequest(BaseModel):
     email: EmailStr
     password: str

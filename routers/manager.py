@@ -5,7 +5,6 @@ from controllers import manager
 from db.session import get_session
 from pydantic_models.common import (
     OrderStatus,
-    LeaveCommentRequest,
     ManagerRegistrationRequest,
     OrderStatusUpdate,
     SignInRequest,
